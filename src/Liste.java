@@ -33,6 +33,7 @@ public interface Liste<T> extends Beholder<T> {
     public default void indeksKontroll(int indeks, boolean leggInn) {
         if (indeks < 0 ? true : (leggInn ? indeks > antall() : indeks >= antall())) {
             throw new IndexOutOfBoundsException(melding(indeks));
+
         }
     }
 }  // Liste

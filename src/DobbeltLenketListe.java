@@ -1,7 +1,9 @@
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.lang.reflect.Array;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.*;
 
 public class DobbeltLenketListe<T> implements Liste<T> {
 
@@ -31,11 +33,43 @@ public class DobbeltLenketListe<T> implements Liste<T> {
     private int endringer;         // antall endringer i listen
 
     public DobbeltLenketListe() {
-        throw new NotImplementedException();
+        hode = hale = null;
+
+
     }
 
     public DobbeltLenketListe(T[] a) {
-        throw new NotImplementedException();
+        int indeks = 0;
+        antall = 0;
+
+        indeksKontroll(indeks, true);  // Se Liste, true: indeks = antall er lovlig
+
+        for(int j=0; j<a.length; j++) {
+            T verdi = a[j];
+            if(a[j] != null){
+            if (indeks == 0)                     // ny verdi skal ligge først
+            {
+                hode = new Node<T>(verdi, null, hode);    // legges først
+                if (antall == 0) hale = hode;      // hode og hale går til samme node
+                indeks++;
+            } else if (indeks == antall)           // ny verdi skal ligge bakerst
+            {
+                hale = hale.neste = new Node<T>(verdi, hale, null);  // legges bakerst
+                indeks++;
+            } else {
+                Node<T> p = hode;                  // p flyttes indeks - 1 ganger
+                for (int i = 1; i < indeks; i++) p = p.neste;
+
+                p.neste = new Node<T>(verdi, p.forrige, p.neste);  // verdi settes inn i listen
+                indeks++;
+            }
+                antall++;
+            }
+
+            // listen har fått en ny verdi                        // listen har fått en ny verdi
+        }
+
+
     }
 
     public Liste<T> subliste(int fra, int til){
@@ -44,17 +78,28 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public int antall() {
-        throw new NotImplementedException();
+        return antall;
     }
 
     @Override
     public boolean tom() {
-        throw new NotImplementedException();
+        return antall == 0;
     }
 
     @Override
     public boolean leggInn(T verdi) {
-        throw new NotImplementedException();
+        Objects.requireNonNull(verdi, "Tabellen a er null!");
+
+        if(tom()){
+            hode = hale = null;
+            hode = hale = new Node<>(verdi, null, null);
+        }else{
+            hale = hale.neste = new Node<>(verdi, hale,null);
+        }
+        endringer++;
+        antall++;
+        return true;
+
     }
 
     @Override
@@ -99,11 +144,46 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public String toString() {
-        throw new NotImplementedException();
+
+        if(tom()) return "[]";
+
+        StringBuilder liste = new StringBuilder();;
+
+        Node<T> node = hode;
+
+        liste.append("[").append(hode.verdi);
+        node = node.neste;
+
+        while(node != null){
+            liste.append(',').append(" ").append(node.verdi);
+            node = node.neste;
+        }
+
+        liste.append("]");
+
+        return liste.toString();
     }
 
     public String omvendtString() {
-        throw new NotImplementedException();
+
+        if(tom()) return "[]";
+
+        StringBuilder liste = new StringBuilder();;
+
+        Node<T> node = hale;
+
+        liste.append("[").append(hale.verdi);
+        node = node.forrige;
+
+        while(node != null){
+            liste.append(',').append(" ").append(node.verdi);
+            node = node.forrige;
+        }
+
+        liste.append("]");
+
+        return liste.toString();
+
     }
 
     @Override
