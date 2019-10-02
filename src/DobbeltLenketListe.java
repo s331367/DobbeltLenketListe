@@ -112,12 +112,13 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public void leggInn(int indeks, T verdi) {
-        throw new NotImplementedException();
+        Objects.requireNonNull(verdi, "Tabellen a er null!");
+
     }
 
     @Override
     public boolean inneholder(T verdi) {
-        throw new NotImplementedException();
+        return indeksTil(verdi) != -1;
     }
 
     private Node<T> finnNode(int indeks){
@@ -140,7 +141,26 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public int indeksTil(T verdi) {
-        throw new NotImplementedException();
+        if(verdi == null) return -1;
+
+        int indeks = -1; //Setter start indeks lik -1
+
+        Node<T> listeVerdi = hode; // Gir listeVerdi lik første verdien til første elementet i dobbellenketliste
+
+        int i = 0; //Teller runder
+        while (i<antall()) {
+
+            //If setning som sjekker om verdien stemmer med listeverdi
+            if (verdi.equals(listeVerdi.verdi)) {
+                    indeks = i; // Setter indeksen til verdien
+                    i = antall(); //Slutter while løkken
+            }
+
+            listeVerdi = listeVerdi.neste; //listeverdi får neste verdi
+            i++;
+        }
+
+        return indeks;
     }
 
     @Override
@@ -179,7 +199,7 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
         if (til > tablengde)                          // til er utenfor tabellen
             throw new IndexOutOfBoundsException
-                    ("til(" + til + ") > tablengde(" + tablengde + ")");
+                    ("til(" + til + ") > antall(" + tablengde + ")");
 
         if (fra > til)                                // fra er større enn til
             throw new IllegalArgumentException
