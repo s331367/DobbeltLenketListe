@@ -7,13 +7,12 @@ public class Main<T> {
         //System. out .println(liste.antall() + " " + liste. tom ());
 
 
-        DobbeltLenketListe<Integer> liste = new DobbeltLenketListe<>();
-        System. out .println(liste.toString() + " " + liste.omvendtString());
-        for ( int i = 1; i <= 3; i++)
-        {
-            liste.leggInn(i);
-            System. out .println(liste.toString() + " " + liste.omvendtString());
-        }
+        Character[] c = {'A','B','C','D','E','F','G','H','I','J',};
+        DobbeltLenketListe<Character> liste = new DobbeltLenketListe<>(c);
+        System.out.println(liste.subliste(3,8)); // [D, E, F, G, H]
+        System.out.println(liste.subliste(5,5)); // []
+        System.out.println(liste.subliste(8,liste.antall())); // [I, J]
+     //   System.out.println(liste.subliste(0,11)); // skal kaste unntak
 // Utskrift:
 // [] []
 // [1] [1]

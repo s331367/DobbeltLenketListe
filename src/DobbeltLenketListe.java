@@ -73,7 +73,15 @@ public class DobbeltLenketListe<T> implements Liste<T> {
     }
 
     public Liste<T> subliste(int fra, int til){
-        throw new NotImplementedException();
+        fratilKontroll(antall, fra, til);
+
+        Node<T> startVerdi = finnNode(fra);
+        Liste<T> nyListe = new DobbeltLenketListe<T>();
+        for(int i= fra; i<til; i++){
+            nyListe.leggInn(startVerdi.verdi);
+            startVerdi = startVerdi.neste;
+        }
+        return nyListe;
     }
 
     @Override
@@ -112,9 +120,22 @@ public class DobbeltLenketListe<T> implements Liste<T> {
         throw new NotImplementedException();
     }
 
+    private Node<T> finnNode(int indeks){
+        Node<T> p = null;
+        int sisteVerdi = antall-1;
+        if(indeks<antall/2){
+            p = hode;
+            for(int i = 0; i<indeks; i++)p = p.neste;
+        }else{
+            p = hale;
+            for(int i = 0; i < sisteVerdi-indeks; i++)p = p.forrige;
+        }
+        return p;
+    }
     @Override
     public T hent(int indeks) {
-        throw new NotImplementedException();
+        indeksKontroll(indeks, false);
+        return finnNode(indeks).verdi;
     }
 
     @Override
@@ -124,7 +145,16 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public T oppdater(int indeks, T nyverdi) {
-        throw new NotImplementedException();
+        Objects.requireNonNull(nyverdi, "Ikke tillatt med null verdier");
+
+        indeksKontroll(indeks, false);
+
+        Node<T> p = finnNode(indeks);
+        T gammelVerdi = p.verdi;
+
+        p.verdi = nyverdi;
+        endringer++;
+        return gammelVerdi;
     }
 
     @Override
@@ -140,6 +170,20 @@ public class DobbeltLenketListe<T> implements Liste<T> {
     @Override
     public void nullstill() {
         throw new NotImplementedException();
+    }
+    private static void fratilKontroll(int tablengde, int fra, int til)
+    {
+        if (fra < 0)                                  // fra er negativ
+            throw new IndexOutOfBoundsException
+                    ("fra(" + fra + ") er negativ!");
+
+        if (til > tablengde)                          // til er utenfor tabellen
+            throw new IndexOutOfBoundsException
+                    ("til(" + til + ") > tablengde(" + tablengde + ")");
+
+        if (fra > til)                                // fra er større enn til
+            throw new IllegalArgumentException
+                    ("fra(" + fra + ") > til(" + til + ") - illegalt intervall!");
     }
 
     @Override
