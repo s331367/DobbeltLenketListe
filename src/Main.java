@@ -5,14 +5,15 @@ public class Main<T> {
         //String[] s = { "Ole" , null , "Per" , "Kari ", null };
         //Liste liste = new DobbeltLenketListe(s);
         //System. out .println(liste.antall() + " " + liste. tom ());
+        DobbeltLenketListe<String> liste = new DobbeltLenketListe<>(new String[]{"A", "B", "C", "D", "E", "F", "G"});
+        liste.fjern(0);
+        liste.fjern(2);
+        liste.fjern(4);
+        System.out.print(liste.toString());
+        System.out.print(liste.omvendtString());
 
 
-        Character[] c = {'A','B','C','D','E','F','G','H','I','J',};
-        DobbeltLenketListe<Character> liste = new DobbeltLenketListe<>(c);
-        System.out.println(liste.subliste(3,8)); // [D, E, F, G, H]
-        System.out.println(liste.subliste(5,5)); // []
-        System.out.println(liste.subliste(8,liste.antall())); // [I, J]
-     //   System.out.println(liste.subliste(0,11)); // skal kaste unntak
+      //   System.out.println(liste.subliste(0,11)); // skal kaste unntak
 // Utskrift:
 // [] []
 // [1] [1]

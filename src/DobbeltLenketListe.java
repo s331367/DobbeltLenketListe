@@ -43,6 +43,7 @@ public class DobbeltLenketListe<T> implements Liste<T> {
         antall = 0;
 
         indeksKontroll(indeks, true);  // Se Liste, true: indeks = antall er lovlig
+        Objects.requireNonNull(a, "Tom liste");
 
         for(int j=0; j<a.length; j++) {
             T verdi = a[j];
@@ -135,8 +136,8 @@ public class DobbeltLenketListe<T> implements Liste<T> {
     }
     @Override
     public T hent(int indeks) {
-        indeksKontroll(indeks, false);
-        return finnNode(indeks).verdi;
+        indeksKontroll(indeks, false);//sjekker om indeksen ikke ligger utenfor listen
+        return finnNode(indeks).verdi; //returner nodens verdi tilsvarende indeksen
     }
 
     @Override
@@ -178,18 +179,92 @@ public class DobbeltLenketListe<T> implements Liste<T> {
     }
 
     @Override
-    public boolean fjern(T verdi) {
-        throw new NotImplementedException();
+    public boolean fjern(T verdi)               // verdi skal fjernes
+    {
+        if (verdi == null) return false;          // ingen nullverdier i listen
+
+        Node<T> p = hode;                           // hjelpepekere
+
+        while (p != null)                         // q skal finne verdien t
+        {
+            if (p.verdi.equals(verdi)) break;       // verdien funnet
+            p = p.neste;                     // p er forgjengeren til q
+        }
+
+        if (p == null) {
+            return false;              // fant ikke verdi
+        } else if (antall == 1) {
+            hode = hale = null;
+        } else if (p == hode) {
+            hode = hode.neste;
+            hode.forrige = null;
+        } else if (p == hale) {
+            hale = hale.forrige;                  // oppdaterer hale
+            hale.neste = null;
+        } else {
+            p.forrige.neste = p.neste;
+            p.neste.forrige = p.forrige;
+        }
+
+        p.verdi = null;                           // nuller verdien til p
+        p.neste = null;                           // nuller nestepeker
+        p.forrige = null;
+
+        antall--;                                 // en node mindre i listen
+        endringer++;
+        return true;                                // vellykket fjerning
+    }
+    @Override
+    public T fjern(int indeks)
+    {
+        indeksKontroll(indeks, false);  // Se Liste, false: indeks = antall er ulovlig
+
+        T temp;                              // hjelpevariabel
+        Node<T> p = hode;
+        if (antall == 1){
+            hale = null;      // det var kun en verdi i listen
+        }else if (indeks == 0) {                     // skal første verdi fjernes?
+            hode = hode.neste;                  // hode flyttes til neste node
+            hode.forrige = null;
+        }else if (indeks == antall - 1){
+            p = hale;           // q er siste node
+            hale = hale.forrige;
+            hale.neste = null;
+        }else{
+            p = finnNode(indeks);  // p er noden foran den som skal fjernes
+            p.forrige.neste = p.neste;
+            p.neste.forrige = p.forrige;
+        }
+
+
+        temp = p.verdi;
+        p.verdi = null;
+        p.forrige = p.neste = null;
+
+        antall--;                            // reduserer antallet
+        endringer++;
+        return temp;                         // returner fjernet verdi
     }
 
     @Override
-    public T fjern(int indeks) {
-        throw new NotImplementedException();
-    }
+   /* public void nullstill() {   //Metode 1 brukte 40ms
+        Node<T> p;
+        for(p= hode; p!=null; p = p.neste){
+            p.verdi = null;
+            p.forrige = null;
+            p.neste = null;
+        }
+        hode = hale = null;
+        antall = 0;
+        endringer++;
+    }*/
+    public void nullstill(){ //andre metoden tok 35 ms
 
-    @Override
-    public void nullstill() {
-        throw new NotImplementedException();
+        for(int i = 0; i<antall; i++){
+            fjern(i);
+        }
+        endringer++;
+        antall = 0;
     }
     private static void fratilKontroll(int tablengde, int fra, int til)
     {
@@ -252,11 +327,11 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
     @Override
     public Iterator<T> iterator() {
-        throw new NotImplementedException();
+        return new DobbeltLenketListeIterator();
     }
 
     public Iterator<T> iterator(int indeks) {
-        throw new NotImplementedException();
+        return new DobbeltLenketListeIterator(indeks);
     }
 
     private class DobbeltLenketListeIterator implements Iterator<T>
@@ -266,21 +341,35 @@ public class DobbeltLenketListe<T> implements Liste<T> {
         private int iteratorendringer;
 
         private DobbeltLenketListeIterator(){
-            throw new NotImplementedException();
+            denne = hode;     // p starter på den første i listen
+            fjernOK = false;  // blir sann når next() kalles
+            iteratorendringer = endringer;  // teller endringer
         }
 
+
         private DobbeltLenketListeIterator(int indeks){
-            throw new NotImplementedException();
+
+            indeksKontroll(indeks, true);
+
+            denne = hode;
+            for(int i = 0; i < indeks; i++) next();
         }
 
         @Override
         public boolean hasNext(){
-            throw new NotImplementedException();
+            return denne != null;
         }
 
         @Override
         public T next(){
-            throw new NotImplementedException();
+            if(endringer != iteratorendringer) throw new ConcurrentModificationException(endringer + "endringer" +
+                    " er ikke lik " + iteratorendringer + " iterasjonsendringer");
+            if(!hasNext())throw new NoSuchElementException("Det er ikke flere igjen i listen");
+
+            fjernOK = true;
+            T verdi = denne.verdi;
+            denne = denne.neste;
+            return  verdi;
         }
 
         @Override
