@@ -205,11 +205,11 @@ public class DobbeltLenketListe<T> implements Liste<T> {
         indeksKontroll(indeks, false);
 
         Node<T> p = finnNode(indeks);
-        T gammelVerdi = p.verdi;
+        T gammelVerdi = p.verdi;            //hjelpevariabel som passer på gamleverdien
 
-        p.verdi = nyverdi;
+        p.verdi = nyverdi;                  //tilordner ny verdi
         endringer++;
-        return gammelVerdi;
+        return gammelVerdi;                 //returnerer gamle verdien
     }
 
     @Override
@@ -255,24 +255,24 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
         T temp;                              // hjelpevariabel
         Node<T> p = hode;
-        if (antall == 1){
-            hale = null;      // det var kun en verdi i listen
+        if (antall == 1){                   // det var kun en verdi i listen
+            hale = null;
         }else if (indeks == 0) {                     // skal første verdi fjernes?
             hode = hode.neste;                  // hode flyttes til neste node
             hode.forrige = null;
-        }else if (indeks == antall - 1){
-            p = hale;           // q er siste node
+        }else if (indeks == antall - 1){        //siste verdien skal fjernes
+            p = hale;
             hale = hale.forrige;
             hale.neste = null;
         }else{
-            p = finnNode(indeks);  // p er noden foran den som skal fjernes
+            p = finnNode(indeks);
             p.forrige.neste = p.neste;
             p.neste.forrige = p.forrige;
         }
 
 
-        temp = p.verdi;
-        p.verdi = null;
+        temp = p.verdi;                     //hjelpevariabel
+        p.verdi = null;                     //fjerner verdien til p
         p.forrige = p.neste = null;
 
         antall--;                            // reduserer antallet
@@ -385,7 +385,7 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
             indeksKontroll(indeks, true);
 
-            denne = finnNode(indeks);
+            denne = finnNode(indeks);       //p starter på oppgitte indeksen
             fjernOK=false;
             iteratorendringer=endringer;
         }
@@ -415,7 +415,26 @@ public class DobbeltLenketListe<T> implements Liste<T> {
     } // class DobbeltLenketListeIterator
 
     public static <T> void sorter(Liste<T> liste, Comparator<? super T> c) {
-        throw new NotImplementedException();
+
+        int antallElem = liste.antall();
+        T verdi;                        //hjelpe variabel
+
+        boolean endre = false;
+        if(liste.antall() == 1){
+            return;
+        }
+        for(int i = 0; i<antallElem-1; i++){
+            if(c.compare(liste.hent(i),liste.hent(i+1))>0){         //Hvis første verdien er større enn andre
+                verdi = liste.hent(i);                                  //tar vare på første verdien
+                endre = true;
+
+                liste.oppdater(i, liste.hent(i+1));                 //bytter om de to nodene
+                liste.oppdater(i+1, verdi);
+            }
+        }
+        if(endre) {
+            sorter(liste, c);
+        }
     }
 
 } // class DobbeltLenketListe
