@@ -385,8 +385,9 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
             indeksKontroll(indeks, true);
 
-            denne = hode;
-            for(int i = 0; i < indeks; i++) next();
+            denne = finnNode(indeks);
+            fjernOK=false;
+            iteratorendringer=endringer;
         }
 
         @Override
@@ -396,7 +397,7 @@ public class DobbeltLenketListe<T> implements Liste<T> {
         
         @Override
         public T next(){
-            if(endringer != iteratorendringer) throw new ConcurrentModificationException(endringer + "endringer" +
+            if(iteratorendringer != endringer) throw new ConcurrentModificationException(endringer + "endringer" +
                     " er ikke lik " + iteratorendringer + " iterasjonsendringer");
             if(!hasNext())throw new NoSuchElementException("Det er ikke flere igjen i listen");
 
