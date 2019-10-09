@@ -394,7 +394,7 @@ public class DobbeltLenketListe<T> implements Liste<T> {
         public boolean hasNext(){
             return denne != null;
         }
-        
+
         @Override
         public T next(){
             if(iteratorendringer != endringer) throw new ConcurrentModificationException(endringer + "endringer" +
@@ -409,7 +409,38 @@ public class DobbeltLenketListe<T> implements Liste<T> {
 
         @Override
         public void remove(){
-            throw new NotImplementedException();
+            if (!fjernOK) throw new IllegalStateException("Ulovlig tilstand!");
+            else if(endringer != iteratorendringer) throw new ConcurrentModificationException("");
+
+            fjernOK = false;           // remove() kan ikke kalles på nytt
+
+            //1. Hvis den som skal fjernes er eneste verdi (antall == 1), så nulles hode og hale.
+            if(antall == 1) {
+                hode = hale = null;
+            }
+
+            //2. Hvis den siste skal fjernes (denne == null), så må hale oppdateres
+            else if(denne == null) {
+                hale = hale.forrige;
+                hale.neste = null;
+            }
+
+            //3. Hvis den første skal fjernes (denne.forrige == hode), så må hode oppdateres.
+            else if(denne.forrige == hode) {
+                hode = hode.neste;
+                hode.forrige = null;
+            }
+
+            //4.Hvis en node inne i listen skal fjernes (noden denne.forrige), så må pekerne i nodene på hver side oppdateres.
+            else  {
+                denne.forrige = denne.forrige.forrige;
+                denne.forrige.neste = denne;
+
+            }
+
+            antall--;
+            endringer++;
+            iteratorendringer++;
         }
 
     } // class DobbeltLenketListeIterator

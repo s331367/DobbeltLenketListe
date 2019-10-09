@@ -5,13 +5,11 @@ public class Main<T> {
         //String[] s = { "Ole" , null , "Per" , "Kari ", null };
         //Liste liste = new DobbeltLenketListe(s);
         //System. out .println(liste.antall() + " " + liste. tom ());
-        DobbeltLenketListe<String> liste = new DobbeltLenketListe<>(new String[]{"A", "B", "C", "D", "E", "F", "G"});
-        liste.fjern(0);
-        liste.fjern(2);
-        liste.fjern(4);
-        System.out.print(liste.toString());
-        System.out.print(liste.omvendtString());
-
+        DobbeltLenketListe<String> liste =
+                new DobbeltLenketListe<>(new String[]
+                        {"Birger","Lars","Anders","Bodil","Kari","Per","Berit"});
+        liste.fjernHvis(navn -> navn.charAt(0) == 'B'); // fjerner navn som starter med B
+        System.out.println(liste + " " + liste.omvendtString());
 
       //   System.out.println(liste.subliste(0,11)); // skal kaste unntak
 // Utskrift:
